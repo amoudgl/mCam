@@ -9,7 +9,6 @@ package com.abhinavmoudgil95.camera2test;
         import java.util.ArrayList;
         import java.util.Arrays;
         import java.util.List;
-
         import android.app.Activity;
         import android.content.Context;
         import android.media.Image;
