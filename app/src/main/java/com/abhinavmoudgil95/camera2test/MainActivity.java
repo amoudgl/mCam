@@ -18,6 +18,7 @@ package com.abhinavmoudgil95.camera2test;
         import android.os.Handler;
         import android.os.HandlerThread;
         import android.util.Log;
+        import android.util.Range;
         import android.util.Size;
         import android.util.SparseIntArray;
         import android.view.Surface;
@@ -27,6 +28,7 @@ package com.abhinavmoudgil95.camera2test;
         import android.view.Window;
         import android.view.WindowManager;
         import android.widget.Button;
+        import android.widget.SeekBar;
         import android.widget.Toast;
         import android.graphics.ImageFormat;
         import android.graphics.SurfaceTexture;
@@ -40,7 +42,7 @@ package com.abhinavmoudgil95.camera2test;
         import android.hardware.camera2.TotalCaptureResult;
         import android.hardware.camera2.params.StreamConfigurationMap;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity{
 
     private final static String TAG = "Camera2testJ";
     private Size mPreviewSize;
@@ -49,6 +51,9 @@ public class MainActivity extends Activity {
     private CameraDevice mCameraDevice;
     private CaptureRequest.Builder mPreviewBuilder;
     private CameraCaptureSession mPreviewSession;
+
+    float BackLightValue = 0.5f;
+
 
     private Button mBtnShot;
 
@@ -68,11 +73,68 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
+        // Sensitivity SeekBar
+        SeekBar sensitivitySeekBar = (SeekBar) findViewById(R.id.sensitivity);
+        sensitivitySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //  TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // TODO Auto-generated method stub
+
+                CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                try {
+                    CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraDevice.getId());
+                    Range<Integer> range2 = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
+                    int max1 = range2.getUpper();//10000
+                    int min1 = range2.getLower();//100
+                    int iso = ((progress * (max1 - min1)) / 100 + min1);
+                    mPreviewBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, iso);
+                } catch (CameraAccessException e) {
+                    Toast.makeText(MainActivity.this, "UpdateFailed", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        //Brightness SeekBar
+        SeekBar brightnessSeekBar = (SeekBar) findViewById(R.id.brightness);
+        brightnessSeekBar .setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //  TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // TODO Auto-generated method stub
+                BackLightValue = (float) progress / 100;
+                WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                layoutParams.screenBrightness = BackLightValue;
+                getWindow().setAttributes(layoutParams);
+            }
+        });
+
         mTextureView = (TextureView)findViewById(R.id.texture);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
 
         mBtnShot = (Button)findViewById(R.id.btn_takepicture);
-        mBtnShot.setOnClickListener(new OnClickListener(){
+        mBtnShot.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -95,6 +157,7 @@ public class MainActivity extends Activity {
         try {
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraDevice.getId());
 
+
             Size[] jpegSizes = null;
             if (characteristics != null) {
                 jpegSizes = characteristics
@@ -115,7 +178,8 @@ public class MainActivity extends Activity {
 
             final CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(reader.getSurface());
-            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_OFF);
+
 
             // Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();

@@ -27,7 +27,7 @@
     <SeekBar
         android:layout_width="90dp"
         android:layout_height="wrap_content"
-        android:id="@+id/exposure"
+        android:id="@+id/brightness"
         android:layout_gravity="left|top" />
 
     <SeekBar
