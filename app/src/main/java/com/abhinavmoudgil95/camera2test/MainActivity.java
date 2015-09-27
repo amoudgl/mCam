@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -331,9 +332,9 @@ public class MainActivity extends Activity {
                 setSensitivity(sensitivityValue);
                 setExposureTime(exposureTimeValue);
                 setSensorFrameDuration(sensorFrameDurationValue);
-                setFocusDistance(1223);
-                setLensFilterDensity(1232);
-                setLensAperture(21321);
+                setFocusDistance((float)100.1);
+                setLensFilterDensity((float)1232);
+                setLensAperture((float)21321);
                 // mPreviewBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 200);
                 // mPreviewBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long) 123121);
                 // mPreviewBuilder.set(CaptureRequest.SENSOR_FRAME_DURATION, (long) 800000000);
@@ -472,17 +473,17 @@ public class MainActivity extends Activity {
     {
         mPreviewBuilder.set(CaptureRequest.SENSOR_FRAME_DURATION, value);
     }
-    public void setFocusDistance(int value)
+    public void setFocusDistance(Float value)
     {
-
+        mPreviewBuilder.set(CaptureRequest.LENS_FOCAL_LENGTH, value);
     }
-    public void setLensFilterDensity(int value )
+    public void setLensFilterDensity(Float value)
     {
-
+        mPreviewBuilder.set(CaptureRequest.LENS_FILTER_DENSITY, value);
     }
-    public void setLensAperture(int value)
+    public void setLensAperture(Float value)
     {
-
+        mPreviewBuilder.set(CaptureRequest.LENS_APERTURE,value);
     }
 
 }
