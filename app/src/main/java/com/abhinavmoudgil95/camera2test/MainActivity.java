@@ -1,21 +1,21 @@
 package com.abhinavmoudgil95.camera2test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import android.app.Activity;
-import android.app.backup.FullBackupDataOutput;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
@@ -35,17 +35,20 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
-import android.graphics.ImageFormat;
-import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.TotalCaptureResult;
-import android.hardware.camera2.params.StreamConfigurationMap;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+//import android.app.backup.FullBackupDataOutput;
 
 public class MainActivity extends Activity {
 
@@ -73,51 +76,7 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-
-        // Sensitivity SeekBar
-        SeekBar sensitivitySeekBar = (SeekBar) findViewById(R.id.sensitivity);
-        sensitivitySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                //  TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
-            {
-                // TODO Auto-generated method stub
-
-                CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-                try {
-
-                  CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraDevice.getId());
-
-                    if (characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL) == CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_FULL)
-                    {
-                        Range<Integer> range2 = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
-                        int max1 = range2.getUpper();//10000
-                        int min1 = range2.getLower();//100
-                        int iso = ((progress * (max1 - min1)) / 100 + min1);
-
-                        mPreviewBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, iso);
-                    }
-
-                     mPreviewBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long) 123121);
-                    mPreviewBuilder.set(CaptureRequest.SENSOR_FRAME_DURATION, (long) 800000000 );
-                } catch (CameraAccessException e) {
-                    Log.e(TAG, "CameraDevice is null, return");
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
+        Log.d(TAG, "OnCreate");
         //Brightness SeekBar
         SeekBar brightnessSeekBar = (SeekBar) findViewById(R.id.brightness);
         brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -238,8 +197,8 @@ public class MainActivity extends Activity {
     private CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
         @Override
-        public void onOpened(CameraDevice camera) {
-
+        public void onOpened(CameraDevice camera)
+        {
             Log.i(TAG, "onOpened");
             mCameraDevice = camera;
             startPreview();
@@ -342,15 +301,9 @@ public class MainActivity extends Activity {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraDevice.getId());
-
             Log.d(TAG, "INFO_SUPPORTED_HARDWARE_LEVEL " + characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL));
 
-            Size[] jpegSizes = null;
-            if (characteristics != null) {
-                jpegSizes = characteristics
-                        .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-                        .getOutputSizes(ImageFormat.JPEG);
-            }
+            Size[] jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
             int width = 640;
             int height = 480;
             if (jpegSizes != null && 0 < jpegSizes.length) {
@@ -366,11 +319,27 @@ public class MainActivity extends Activity {
             final CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(reader.getSurface());
 
-            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
-           // mPreviewBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 200);
-           // mPreviewBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long) 123121);
-           // mPreviewBuilder.set(CaptureRequest.SENSOR_FRAME_DURATION, (long) 800000000);
-
+            Intent i = getIntent();
+            int sensitivityValue = i.getIntExtra("Sensitivity", 0);
+            long exposureTimeValue = i.getLongExtra("ExposureTime", 0);
+            int sensorFrameDurationValue = i.getIntExtra("SensorFrameDuration", 0);
+            boolean toggleSwitchValue = i.getBooleanExtra("ToggleSwitch", false);
+            Log.d(TAG, "Switch State = " + toggleSwitchValue);
+            if (characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL) == CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_FULL && !toggleSwitchValue)
+            {
+                captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_OFF);
+                setSensitivity(sensitivityValue);
+                setExposureTime(exposureTimeValue);
+                setSensorFrameDuration(sensorFrameDurationValue);
+                setFocusDistance(1223);
+                setLensFilterDensity(1232);
+                setLensAperture(21321);
+                // mPreviewBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, 200);
+                // mPreviewBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, (long) 123121);
+                // mPreviewBuilder.set(CaptureRequest.SENSOR_FRAME_DURATION, (long) 800000000);
+            }
+            else
+                captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
             // Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
@@ -460,11 +429,13 @@ public class MainActivity extends Activity {
         }
 
     }
+
     ///////////////////////////////////CONFIGURE TRANSFORM////////////////////////////////////
 
-    private void configureTransform(int viewWidth, int viewHeight) {
+    private void configureTransform(int viewWidth, int viewHeight)
+    {
         Activity activity = MainActivity.this;
-        if (null == mTextureView || null == mPreviewSize || null == activity) {
+        if (null == mTextureView || null == mPreviewSize) {
             return;
         }
         int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -485,4 +456,35 @@ public class MainActivity extends Activity {
         Log.d(TAG, matrix.toString());
         mTextureView.setTransform(matrix);
     }
+
+    ///////////////////////////////////MANUAL CONTROL FUNCTIONS////////////////////////////////////
+
+    public void setSensitivity(int value)
+    {
+        mPreviewBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, value);
+    }
+    public void setExposureTime(long value)
+    {
+        mPreviewBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, value);
+
+    }
+    public void setSensorFrameDuration(long value)
+    {
+        mPreviewBuilder.set(CaptureRequest.SENSOR_FRAME_DURATION, value);
+    }
+    public void setFocusDistance(int value)
+    {
+
+    }
+    public void setLensFilterDensity(int value )
+    {
+
+    }
+    public void setLensAperture(int value)
+    {
+
+    }
+
 }
+
+

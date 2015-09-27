@@ -30,12 +30,6 @@
         android:id="@+id/brightness"
         android:layout_gravity="left|top" />
 
-    <SeekBar
-        android:layout_width="91dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/sensitivity"
-        android:layout_gravity="center_horizontal|top" />
-
     <Button
         android:layout_width="50dp"
         android:layout_height="wrap_content"
