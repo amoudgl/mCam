@@ -5,7 +5,7 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.abhinavmoudgil95.camera2test"
+        applicationId "com.abhinavmoudgil95.mCam"
         minSdkVersion 21
         targetSdkVersion 22
         versionCode 1

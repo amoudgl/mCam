@@ -1,4 +1,4 @@
-package com.abhinavmoudgil95.camera2test;
+package com.abhinavmoudgil95.mCam;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 
 public class Launcher extends Activity
@@ -49,6 +50,10 @@ public class Launcher extends Activity
             //Spinner for focal lengths
             Spinner focalLengths = (Spinner) findViewById(R.id.focalDistancesSpinner);
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
+            if (characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL) != CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_FULL)
+            {
+                Toast.makeText(Launcher.this, "Manual camera control not supported!", Toast.LENGTH_LONG).show();
+            }
             float[] focalLengthArray =  characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
             String[] stringValues = new String[focalLengthArray.length];
             for (int i=0;  i<focalLengthArray.length;  i++) {
@@ -206,8 +211,8 @@ public class Launcher extends Activity
                 }
             }
         });
-
     }
+
     @Override
     protected void onResume()
     {

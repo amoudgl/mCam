@@ -1,4 +1,4 @@
-package com.abhinavmoudgil95.camera2test;
+package com.abhinavmoudgil95.mCam;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

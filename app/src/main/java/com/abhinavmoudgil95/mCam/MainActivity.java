@@ -1,11 +1,10 @@
-package com.abhinavmoudgil95.camera2test;
+package com.abhinavmoudgil95.mCam;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -24,7 +23,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
-import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -190,7 +188,7 @@ public class MainActivity extends Activity {
         {
             e.printStackTrace();
         }
-      //  Log.e(TAG, "openCamera X");
+        //  Log.e(TAG, "openCamera X");
     }
 
     ///////////////////////////////////CAMERA STATE CALLBACK////////////////////////////////////
@@ -280,6 +278,7 @@ public class MainActivity extends Activity {
         HandlerThread thread = new HandlerThread("CameraPreview");
         thread.start();
         Handler backgroundHandler = new Handler(thread.getLooper());
+
 
         try {
             mPreviewSession.setRepeatingRequest(mPreviewBuilder.build(), null, backgroundHandler);
@@ -487,5 +486,4 @@ public class MainActivity extends Activity {
     }
 
 }
-
 
